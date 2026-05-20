@@ -1,0 +1,3 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>My Orders</title><link rel="stylesheet" href="/css/bookportal.css"></head><body><div th:replace="~{fragments :: nav('orders')}"></div><main class="container"><div th:replace="~{fragments :: messages}"></div>
+<h1 class="title">My Orders</h1><table class="table card"><thead><tr><th>Order</th><th>Date</th><th>Status</th><th>Total</th></tr></thead><tbody><tr th:each="o:${orders}"><td>#<span th:text="${o.orderId}"></span></td><td th:text="${o.orderDate}"></td><td><span class="pill" th:text="${o.orderStatus}"></span></td><td>₹<span th:text="${o.totalAmount}"></span></td></tr></tbody></table>
+</main></body></html>
