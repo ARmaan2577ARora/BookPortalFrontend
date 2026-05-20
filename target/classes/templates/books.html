@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Books</title>
+  <link rel="stylesheet" href="/css/bookportal.css">
+</head>
+<body>
+<div th:replace="~{fragments :: nav('books')}"></div>
+<main class="container">
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <section class="page-hero compact">
+    <div>
+      <h1 class="title">Browse Books</h1>
+      <p class="sub" th:text="${filterText != '' ? filterText : 'Search books by title, author, or publisher'}"></p>
+    </div>
+    <form class="search-card" method="get" action="/books">
+      <input class="input" name="q" th:value="${q}" placeholder="Search book, author, publisher">
+      <button class="btn">Search</button>
+    </form>
+  </section>
+
+  <div class="grid grid-4">
+    <div class="card book-card" th:each="b:${books}">
+      <div class="cover"><span th:text="${#strings.substring(b.title,0,1)}">B</span></div>
+      <h3 th:text="${b.title}">Book</h3>
+      <p class="muted small"><span th:text="${b.authorNames}"></span> · <span th:text="${b.publisherName}"></span></p>
+      <p><span class="pill" th:text="${b.language}">English</span></p>
+      <div class="space">
+        <span class="price">₹<span th:text="${b.minPrice}">0</span></span>
+        <a class="btn secondary" th:href="@{'/books/'+${b.bookId}}">View Details</a>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>
