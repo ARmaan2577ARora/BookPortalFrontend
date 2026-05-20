@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authors & Publishers</title>
+  <link rel="stylesheet" href="/css/bookportal.css">
+</head>
+<body>
+<div th:replace="~{fragments :: nav('authors')}"></div>
+<main class="container">
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <section class="page-hero compact">
+    <div>
+      <h1 class="title">Author & Publisher Details</h1>
+      <p class="sub">Open author/publisher details or directly view their books.</p>
+    </div>
+    <form class="search-card" method="get">
+      <input class="input" name="q" th:value="${q}" placeholder="Search author or publisher">
+      <button class="btn">Search</button>
+    </form>
+  </section>
+
+  <div class="section-head">
+    <div>
+      <h2>Authors</h2>
+      <p class="sub">Click details to see profile and all books written by the author.</p>
+    </div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card entity-card" th:each="a:${authors}">
+      <div class="entity-line">
+        <div class="avatar" th:text="${#strings.substring(a.fullName,0,1)}">A</div>
+        <div>
+          <h3 th:text="${a.fullName}">Author</h3>
+          <p class="muted small" th:text="${a.country}">Country</p>
+        </div>
+      </div>
+      <p class="small clamp" th:text="${a.bio}">Bio</p>
+      <div class="row wrap">
+        <a class="btn" th:href="@{'/authors/'+${a.authorId}}">Author Details</a>
+        <a class="btn secondary" th:href="@{/books(authorId=${a.authorId})}">View Books</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head top-gap">
+    <div>
+      <h2>Publishers</h2>
+      <p class="sub">Click details to see publisher information and all published books.</p>
+    </div>
+  </div>
+  <div class="grid grid-3">
+    <div class="card entity-card" th:each="p:${publishers}">
+      <div class="entity-line">
+        <div class="avatar publisher-avatar">P</div>
+        <div>
+          <h3 th:text="${p.publisherName}">Publisher</h3>
+          <p class="muted small"><span th:text="${p.city}"></span>, <span th:text="${p.country}"></span></p>
+        </div>
+      </div>
+      <p class="small muted" th:text="${p.website}">Website</p>
+      <div class="row wrap">
+        <a class="btn" th:href="@{'/publishers/'+${p.publisherId}}">Publisher Details</a>
+        <a class="btn secondary" th:href="@{/books(publisherId=${p.publisherId})}">View Books</a>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>
