@@ -1,0 +1,21 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><body>
+<nav class="nav" th:fragment="nav(activePage)">
+  <a class="brand" href="/">Book<span>Partner</span></a>
+  <div>
+    <a th:classappend="${activePage=='books'}?'active'" href="/books">Books</a>
+    <a th:classappend="${activePage=='authors'}?'active'" href="/authors-publishers">Authors & Publishers</a>
+    <a th:classappend="${activePage=='stores'}?'active'" href="/stores">Stores</a>
+    <a th:if="${isAdmin}" th:classappend="${activePage=='analytics'}?'active'" href="/analytics">Admin Analytics</a>
+    <a th:if="${isCustomer}" th:classappend="${activePage=='orders'}?'active'" href="/my-orders">My Orders</a>
+    <a th:if="${loggedInUser != null}" th:classappend="${activePage=='profile'}?'active'" href="/profile">Profile</a>
+    <a href="/cart">Cart <span class="badge" th:text="${cartCount}">0</span></a>
+    <a th:if="${loggedInUser == null}" href="/signup">Signup</a>
+    <a th:if="${loggedInUser == null}" href="/login">Login</a>
+    <a th:if="${loggedInUser != null}" href="/logout">Logout</a>
+  </div>
+</nav>
+<div th:fragment="messages">
+  <div th:if="${success}" class="success" th:text="${success}"></div>
+  <div th:if="${error}" class="error" th:text="${error}"></div>
+</div>
+</body></html>
