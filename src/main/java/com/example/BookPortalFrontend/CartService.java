@@ -1,4 +1,4 @@
-package com.example.bookPortalFrontend;
+package com.example.BookPortalFrontend;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
