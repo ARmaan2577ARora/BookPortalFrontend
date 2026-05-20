@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${author.fullName} + ' - Author Details'">Author Details</title>
+  <link rel="stylesheet" href="/css/bookportal.css">
+</head>
+<body>
+<div th:replace="~{fragments :: nav('authors')}"></div>
+<main class="container">
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <section class="profile-hero">
+    <div class="avatar huge" th:text="${#strings.substring(author.fullName,0,1)}">A</div>
+    <div>
+      <div class="breadcrumb-line"><a href="/authors-publishers">Authors & Publishers</a> / Author</div>
+      <h1 class="title" th:text="${author.fullName}">Author Name</h1>
+      <p class="sub" th:text="${author.bio}">Author bio</p>
+      <div class="chip-row">
+        <span class="pill">Country: <span th:text="${author.country}">Country</span></span>
+        <span class="pill">Phone: <span th:text="${author.phone}">Phone</span></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <div>
+      <h2>Books by this Author</h2>
+      <p class="sub">Click any book to view full details and compare store prices.</p>
+    </div>
+    <a class="btn secondary" th:href="@{/books(authorId=${author.authorId})}">View All Books</a>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="card book-card" th:each="b:${books}">
+      <div class="cover"><span th:text="${#strings.substring(b.title,0,1)}">B</span></div>
+      <h3 th:text="${b.title}">Book</h3>
+      <p class="muted small"><span th:text="${b.publisherName}">Publisher</span> · <span th:text="${b.language}">Language</span></p>
+      <div class="space">
+        <span class="price">₹<span th:text="${b.minPrice}">0</span></span>
+        <a class="btn secondary" th:href="@{'/books/'+${b.bookId}}">View Details</a>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>
