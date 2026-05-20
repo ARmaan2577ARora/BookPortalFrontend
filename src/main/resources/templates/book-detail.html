@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${book.title} + ' - Book Detail'">Book Detail</title>
+  <link rel="stylesheet" href="/css/bookportal.css">
+</head>
+<body>
+<div th:replace="~{fragments :: nav('books')}"></div>
+<main class="container">
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <section class="detail-hero">
+    <div class="book-cover-lg">
+      <span th:text="${#strings.substring(book.title,0,1)}">B</span>
+    </div>
+
+    <div class="hero-content">
+      <div class="breadcrumb-line"><a href="/books">Books</a> / <span th:text="${book.title}">Book</span></div>
+      <h1 class="title" th:text="${book.title}">Book Title</h1>
+      <p class="sub" th:text="${book.description}">Book description</p>
+
+      <div class="chip-row">
+        <a class="link-chip" th:each="a:${book.authors}" th:href="@{'/authors/'+${a.authorId}}">
+          <span>Author</span>
+          <b th:text="${a.fullName}">Author Name</b>
+        </a>
+        <a class="link-chip publisher" th:if="${book.publisher != null}" th:href="@{'/publishers/'+${book.publisher.publisherId}}">
+          <span>Publisher</span>
+          <b th:text="${book.publisher.publisherName}">Publisher</b>
+        </a>
+      </div>
+
+      <div class="hero-actions">
+        <a class="btn" th:href="@{'/books/'+${book.bookId}+'/stores'}">Compare Prices Across Stores</a>
+        <a class="btn secondary" href="/authors-publishers">Explore Authors & Publishers</a>
+      </div>
+    </div>
+
+    <div class="price-panel">
+      <span class="muted small">Starting from</span>
+      <div class="price">₹<span th:text="${book.minPrice}">0</span></div>
+      <span class="pill">Stock: <span th:text="${book.totalStock}">0</span></span>
+    </div>
+  </section>
+
+  <section class="grid grid-4 meta-strip">
+    <div class="card mini-card"><span>ISBN</span><b th:text="${book.isbn}">ISBN</b></div>
+    <div class="card mini-card"><span>Language</span><b th:text="${book.language}">English</b></div>
+    <div class="card mini-card"><span>Pages</span><b th:text="${book.pages}">0</b></div>
+    <div class="card mini-card"><span>Published</span><b th:text="${book.publishedDate}">Date</b></div>
+  </section>
+
+  <section class="grid grid-2 info-grid">
+    <div class="card entity-summary">
+      <h2>Author Details</h2>
+      <div class="entity-line" th:each="a:${book.authors}">
+        <div class="avatar" th:text="${#strings.substring(a.fullName,0,1)}">A</div>
+        <div>
+          <a class="entity-title" th:href="@{'/authors/'+${a.authorId}}" th:text="${a.fullName}">Author</a>
+          <p class="muted small"><span th:text="${a.country}">Country</span> · <span th:text="${a.phone}">Phone</span></p>
+          <p class="small" th:text="${a.bio}">Bio</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card entity-summary">
+      <h2>Publisher Details</h2>
+      <div class="entity-line">
+        <div class="avatar publisher-avatar">P</div>
+        <div>
+          <a class="entity-title" th:href="@{'/publishers/'+${book.publisher.publisherId}}" th:text="${book.publisher.publisherName}">Publisher</a>
+          <p class="muted small"><span th:text="${book.publisher.city}">City</span>, <span th:text="${book.publisher.state}">State</span>, <span th:text="${book.publisher.country}">Country</span></p>
+          <a class="small" th:if="${book.publisher.website != null and book.publisher.website != ''}" th:href="${book.publisher.website}" th:text="${book.publisher.website}">Website</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <div>
+      <h2>Available Stores</h2>
+      <p class="sub">Select a store based on price, stock, and delivery days.</p>
+    </div>
+    <a class="btn secondary" th:href="@{'/books/'+${book.bookId}+'/stores'}">Open Compare Page</a>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="card store-card" th:each="sb:${storeBooks}">
+      <div class="space">
+        <h3 th:text="${sb.store.storeName}">Store</h3>
+        <span class="pill"><span th:text="${sb.deliveryDays}">0</span> days</span>
+      </div>
+      <p class="muted"><span th:text="${sb.store.city}">City</span> · Stock <span th:text="${sb.stockQuantity}">0</span></p>
+      <p class="price">₹<span th:text="${sb.price}">0</span></p>
+      <form method="post" action="/cart/add" class="row">
+        <input type="hidden" name="storeBookId" th:value="${sb.storeBookId}">
+        <input type="hidden" name="redirectTo" th:value="@{'/books/'+${book.bookId}}">
+        <button class="btn">Add to Cart</button>
+      </form>
+    </div>
+  </div>
+</main>
+</body>
+</html>
