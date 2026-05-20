@@ -1,4 +1,4 @@
-package com.example.bookPortalFrontend;
+package com.example.BookPortalFrontend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,12 +7,14 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class BookPortalFrontendApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(BookPortalFrontendApplication.class, args);
-    }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(BookPortalFrontendApplication.class, args);
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
+
 }

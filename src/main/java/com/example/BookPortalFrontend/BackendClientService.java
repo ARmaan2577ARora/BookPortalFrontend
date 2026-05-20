@@ -1,4 +1,4 @@
-package com.example.bookPortalFrontend;
+package com.example.BookPortalFrontend;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
