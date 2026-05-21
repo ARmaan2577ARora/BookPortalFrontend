@@ -1,0 +1,3 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Order Confirmed</title><link rel="stylesheet" href="/css/bookportal.css"></head><body><div th:replace="~{fragments :: nav('orders')}"></div><main class="container"><div th:replace="~{fragments :: messages}"></div>
+<div class="card" style="text-align:center"><h1>Order Confirmed!</h1><p>Your order has been placed successfully.</p><p class="pill">Order ID: <span th:text="${order.orderId}"></span></p><p>Status: <b th:text="${order.orderStatus}"></b></p><h2>Total ₹<span th:text="${order.totalAmount}"></span></h2><a class="btn" href="/my-orders">View My Orders</a></div>
+</main></body></html>

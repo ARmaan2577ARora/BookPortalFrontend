@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${publisher.publisherName} + ' - Publisher Details'">Publisher Details</title>
+  <link rel="stylesheet" href="/css/bookportal.css">
+</head>
+<body>
+<div th:replace="~{fragments :: nav('authors')}"></div>
+<main class="container">
+  <div th:replace="~{fragments :: messages}"></div>
+
+  <section class="profile-hero publisher-hero">
+    <div class="avatar huge publisher-avatar">P</div>
+    <div>
+      <div class="breadcrumb-line"><a href="/authors-publishers">Authors & Publishers</a> / Publisher</div>
+      <h1 class="title" th:text="${publisher.publisherName}">Publisher</h1>
+      <p class="sub"><span th:text="${publisher.city}">City</span>, <span th:text="${publisher.state}">State</span>, <span th:text="${publisher.country}">Country</span></p>
+      <div class="chip-row">
+        <a class="pill" th:if="${publisher.website != null and publisher.website != ''}" th:href="${publisher.website}" th:text="${publisher.website}">Website</a>
+        <span class="pill">Publisher ID: <span th:text="${publisher.publisherId}">0</span></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <div>
+      <h2>Books from this Publisher</h2>
+      <p class="sub">Open a book to view authors, details, and store price comparison.</p>
+    </div>
+    <a class="btn secondary" th:href="@{/books(publisherId=${publisher.publisherId})}">View Publisher Books</a>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="card book-card" th:each="b:${books}">
+      <div class="cover"><span th:text="${#strings.substring(b.title,0,1)}">B</span></div>
+      <h3 th:text="${b.title}">Book</h3>
+      <p class="muted small"><span th:text="${b.authorNames}">Authors</span> · <span th:text="${b.language}">Language</span></p>
+      <div class="space">
+        <span class="price">₹<span th:text="${b.minPrice}">0</span></span>
+        <a class="btn secondary" th:href="@{'/books/'+${b.bookId}}">View Details</a>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

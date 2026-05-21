@@ -1,0 +1,1 @@
+.checkout-layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px}.address-form{border:1px dashed #93c5fd;background:#eff6ff;border-radius:16px;padding:16px}.summary-box{position:sticky;top:88px}@media(max-width:900px){.checkout-layout{grid-template-columns:1fr}.summary-box{position:static}}

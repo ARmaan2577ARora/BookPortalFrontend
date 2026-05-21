@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Analytics</title>
+    <link rel="stylesheet" href="/css/bookportal.css">
+</head>
+<body>
+<div th:replace="~{fragments :: nav('analytics')}"></div>
+<main class="container">
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1 class="title">Admin Analytics</h1>
+
+    <div class="grid grid-4">
+        <div class="card"><p class="muted">Books</p><h2 th:text="${analytics.bookCount}"></h2></div>
+        <div class="card"><p class="muted">Orders</p><h2 th:text="${analytics.orderCount}"></h2></div>
+        <div class="card"><p class="muted">Revenue</p><h2>₹<span th:text="${analytics.revenue}"></span></h2><p class="muted">Cancelled orders excluded</p></div>
+        <div class="card"><p class="muted">Customers</p><h2 th:text="${analytics.customerCount}"></h2></div>
+    </div>
+
+    <h2>Low Stock Alerts</h2>
+    <table class="table card">
+        <thead>
+        <tr><th>Book</th><th>Store</th><th>Stock</th></tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(analytics.lowStock)}"><td colspan="3" class="muted">No low stock items.</td></tr>
+        <tr th:each="sb:${analytics.lowStock}">
+            <td th:text="${sb.book.title}"></td>
+            <td th:text="${sb.store.storeName}"></td>
+            <td th:text="${sb.stockQuantity}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>Recent Orders</h2>
+    <table class="table card">
+        <thead>
+        <tr><th>Order</th><th>User</th><th>Total</th><th>Status</th><th>Update</th></tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(analytics.recentOrders)}"><td colspan="5" class="muted">No orders found.</td></tr>
+        <tr th:each="o:${analytics.recentOrders}">
+            <td>#<span th:text="${o.orderId}"></span></td>
+            <td th:text="${o.user.email}"></td>
+            <td>₹<span th:text="${o.totalAmount}"></span></td>
+            <td><span class="pill" th:text="${o.orderStatus}"></span></td>
+            <td>
+                <form class="row" method="post" th:action="@{'/admin/orders/'+${o.orderId}+'/status'}">
+                    <select name="status">
+                        <option value="PROCESSING" th:selected="${o.orderStatus == 'PROCESSING'}">PROCESSING</option>
+                        <option value="CONFIRMED" th:selected="${o.orderStatus == 'CONFIRMED'}">CONFIRMED</option>
+                        <option value="SHIPPED" th:selected="${o.orderStatus == 'SHIPPED'}">SHIPPED</option>
+                        <option value="DELIVERED" th:selected="${o.orderStatus == 'DELIVERED'}">DELIVERED</option>
+                        <option value="CANCELLED" th:selected="${o.orderStatus == 'CANCELLED'}"
+                                th:disabled="${o.orderStatus == 'SHIPPED' or o.orderStatus == 'DELIVERED'}">CANCELLED</option>
+                    </select>
+                    <button class="btn secondary" type="submit">Save</button>
+                    <span class="muted" th:if="${o.orderStatus == 'SHIPPED' or o.orderStatus == 'DELIVERED'}">Cannot cancel shipped/delivered orders</span>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

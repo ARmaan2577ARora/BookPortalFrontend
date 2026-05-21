@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <link rel="stylesheet" href="/css/bookportal.css">
+</head>
+<body>
+<div th:replace="~{fragments :: nav('orders')}"></div>
+<main class="container">
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1 class="title">My Orders</h1>
+
+    <table class="table card">
+        <thead>
+        <tr>
+            <th>Order</th>
+            <th>Book Name</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(orders)}">
+            <td colspan="6" class="muted">No orders found.</td>
+        </tr>
+        <tr th:each="o:${orders}">
+            <td>#<span th:text="${o.orderId}"></span></td>
+            <td>
+                <ul class="plain-list" style="margin:0; padding-left:18px">
+                    <li th:each="item:${o.items}">
+                        <b th:text="${item.storeBook.book.title}">Book name</b>
+                        <span> × </span><span th:text="${item.quantity}">1</span>
+                        <span class="muted" th:if="${item.storeBook.store.storeName != null}">
+                            from <span th:text="${item.storeBook.store.storeName}">Store</span>
+                        </span>
+                    </li>
+                </ul>
+            </td>
+            <td th:text="${o.orderDate}"></td>
+            <td><span class="pill" th:text="${o.orderStatus}"></span></td>
+            <td>₹<span th:text="${o.totalAmount}"></span></td>
+            <td>
+                <form method="post" th:action="@{'/my-orders/'+${o.orderId}+'/cancel'}"
+                      th:if="${o.orderStatus != 'CANCELLED' and o.orderStatus != 'SHIPPED' and o.orderStatus != 'DELIVERED'}"
+                      onsubmit="return confirm('Cancel this order? Stock will be restored.');">
+                    <button class="btn secondary" type="submit">Cancel</button>
+                </form>
+                <span class="muted" th:unless="${o.orderStatus != 'CANCELLED' and o.orderStatus != 'SHIPPED' and o.orderStatus != 'DELIVERED'}">-</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

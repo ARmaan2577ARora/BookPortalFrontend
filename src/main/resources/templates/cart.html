@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="/css/bookportal.css">
+</head>
+<body>
+<div th:replace="~{fragments :: nav('cart')}"></div>
+
+<main class="container">
+    <div th:replace="~{fragments :: messages}"></div>
+
+    <h1 class="title">My Cart</h1>
+
+    <div th:if="${#lists.isEmpty(cartLines)}" class="card">
+        <p>Your cart is empty.</p>
+        <a class="btn" href="/books">Browse Books</a>
+    </div>
+
+    <div th:if="${!#lists.isEmpty(cartLines)}">
+        <table class="table card" id="cartTable">
+            <thead>
+            <tr>
+                <th>Book</th>
+                <th>Store</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="line:${cartLines}" class="cart-line" th:attr="data-store-book-id=${line.storeBookId}">
+                <td th:text="${line.storeBook.book.title}"></td>
+                <td th:text="${line.storeBook.store.storeName}"></td>
+                <td>
+                    ₹<span class="line-price" th:text="${line.storeBook.price}"></span>
+                </td>
+                <td>
+                    <form class="row cart-update-form" method="post" action="/cart/update">
+                        <input type="hidden" name="storeBookId" th:value="${line.storeBookId}">
+                        <input class="input cart-qty-input"
+                               style="width:80px"
+                               type="number"
+                               min="0"
+                               name="quantity"
+                               th:value="${line.quantity}"
+                               th:attr="data-store-book-id=${line.storeBookId},data-price=${line.storeBook.price}"
+                               autocomplete="off">
+                        <button class="btn secondary cart-update-btn" type="submit" style="display:none">Update</button>
+                    </form>
+                    <small class="muted">Auto updates</small>
+                </td>
+                <td>
+                    ₹<span class="line-subtotal" th:text="${line.subtotal}"></span>
+                </td>
+                <td>
+                    <form method="post" action="/cart/remove">
+                        <input type="hidden" name="storeBookId" th:value="${line.storeBookId}">
+                        <button class="btn danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="space card">
+            <h2>Total: ₹<span id="cartTotal" th:text="${cartTotal}"></span></h2>
+            <a class="btn" href="/checkout">Proceed to Checkout</a>
+        </div>
+    </div>
+</main>
+
+<script>
+(function () {
+    const quantityInputs = document.querySelectorAll('.cart-qty-input');
+    const cartTotalEl = document.getElementById('cartTotal');
+    const timers = new Map();
+
+    function toNumber(value) {
+        const number = Number(String(value || '0').replace(/,/g, ''));
+        return Number.isFinite(number) ? number : 0;
+    }
+
+    function formatMoney(value) {
+        return value.toFixed(2).replace(/\.00$/, '');
+    }
+
+    function recalculateCartTotal() {
+        let total = 0;
+        document.querySelectorAll('.cart-line').forEach(function (row) {
+            const subtotalEl = row.querySelector('.line-subtotal');
+            total += toNumber(subtotalEl ? subtotalEl.textContent : 0);
+        });
+        if (cartTotalEl) cartTotalEl.textContent = formatMoney(total);
+    }
+
+    function recalculateLine(input) {
+        const row = input.closest('.cart-line');
+        if (!row) return;
+
+        const price = toNumber(input.dataset.price);
+        const quantity = Math.max(0, Number.parseInt(input.value || '0', 10) || 0);
+        const subtotalEl = row.querySelector('.line-subtotal');
+
+        if (subtotalEl) subtotalEl.textContent = formatMoney(price * quantity);
+        recalculateCartTotal();
+    }
+
+    function syncQuantity(input) {
+        if (String(input.value || '').trim() === '') return;
+
+        const form = input.closest('form');
+        if (!form) return;
+
+        const data = new URLSearchParams(new FormData(form));
+
+        fetch(form.action, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(function () {
+            const quantity = Number.parseInt(input.value || '0', 10) || 0;
+            if (quantity <= 0) {
+                const row = input.closest('.cart-line');
+                if (row) row.remove();
+                recalculateCartTotal();
+
+                if (!document.querySelector('.cart-line')) {
+                    window.location.reload();
+                }
+            }
+        }).catch(function () {
+            form.submit();
+        });
+    }
+
+    quantityInputs.forEach(function (input) {
+        input.addEventListener('input', function () {
+            recalculateLine(input);
+
+            const storeBookId = input.dataset.storeBookId;
+            clearTimeout(timers.get(storeBookId));
+            timers.set(storeBookId, setTimeout(function () {
+                syncQuantity(input);
+            }, 350));
+        });
+
+        input.addEventListener('change', function () {
+            const storeBookId = input.dataset.storeBookId;
+            clearTimeout(timers.get(storeBookId));
+            recalculateLine(input);
+            syncQuantity(input);
+        });
+    });
+})();
+</script>
+</body>
+</html>
